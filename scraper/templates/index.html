@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b66ff" />
+    <title>ScraperTool</title>
+    <meta
+      name="description"
+      content="Run and monitor scraper scripts. Server-rendered UI with accessible, responsive controls for production use."
+    />
+    <!-- Recommended: serve a compressed, cached font from your CDN or self-hosted. -->
+    <style>
+      :root {
+        --bg: #f7f8fb;
+        --card: #ffffff;
+        --muted: #6b7280;
+        --accent: #0b66ff;
+        --radius: 12px;
+        --shadow: 0 6px 18px rgba(11, 102, 255, 0.06);
+        font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        color-scheme: light;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: #0f172a;
+        line-height: 1.45;
+        font-size: 16px;
+      }
+
+      .container {
+        max-width: 980px;
+        margin: 36px auto;
+        padding: 24px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .logo svg {
+        width: 70px;
+        height: 70px;
+      }
+      h1 {
+        margin: 0;
+        font-size: 20px;
+      }
+      .lead {
+        margin: 6px 0 18px;
+        color: var(--muted);
+      }
+
+      main {
+        display: grid;
+        grid-template-columns: 1fr 360px;
+        gap: 20px;
+      }
+      @media (max-width: 880px) {
+        main {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .card {
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 18px;
+      }
+      .scripts-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .script-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px;
+        border-radius: 10px;
+        border: 1px solid #eef2ff;
+      }
+      .script-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+      }
+      .script-name {
+        font-weight: 600;
+        color: #0f172a;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .script-desc {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .controls {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .btn {
+        appearance: none;
+        border: 1px solid #dbeafe;
+        background: #fff;
+        padding: 8px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      .btn:focus {
+        outline: 3px solid rgba(11, 102, 255, 0.18);
+      }
+      .btn-primary {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+      .btn-ghost {
+        background: transparent;
+        border-color: transparent;
+      }
+
+      /* server message area */
+      .meta {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      /* small utilities */
+      .muted {
+        color: var(--muted);
+      }
+      .divider {
+        height: 1px;
+        background: #eef2ff;
+        margin: 12px 0;
+        border-radius: 2px;
+      }
+
+      /* Accessibility: focus-visible only */
+      :focus {
+        outline: none;
+      }
+      :focus-visible {
+        outline: 3px solid rgba(11, 102, 255, 0.18);
+        outline-offset: 2px;
+      }
+
+      footer {
+        margin-top: 18px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="logo" aria-hidden="true">
+          <svg
+            viewBox="0 0 48 48"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-hidden="true"
+          >
+            <!-- background rounded square -->
+            <rect x="2" y="2" width="44" height="44" rx="10" fill="#eef6ff" />
+
+            <!-- database cylinder (top ellipse + body) -->
+            <ellipse
+              cx="20"
+              cy="16"
+              rx="8"
+              ry="3"
+              fill="#0b66ff"
+              opacity="0.2"
+            />
+            <rect
+              x="12"
+              y="16"
+              width="16"
+              height="10"
+              fill="#0b66ff"
+              opacity="0.2"
+            />
+            <ellipse
+              cx="20"
+              cy="26"
+              rx="8"
+              ry="3"
+              fill="#0b66ff"
+              opacity="0.2"
+            />
+
+            <!-- magnifying glass -->
+            <circle
+              cx="30"
+              cy="28"
+              r="6"
+              stroke="#0b66ff"
+              stroke-width="2"
+              fill="none"
+            />
+            <line
+              x1="34"
+              y1="32"
+              x2="38"
+              y2="36"
+              stroke="#0b66ff"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        </div>
+        <div>
+          <h1>ScraperTool</h1>
+        </div>
+      </header>
+
+      <main>
+        <section aria-labelledby="scripts-heading">
+          <div class="card" role="region" aria-label="Available scrapers">
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                margin-bottom: 12px;
+              "
+            >
+              <h2 id="scripts-heading" style="margin: 0; font-size: 16px">
+                Available Scrapers
+              </h2>
+            </div>
+
+            <div class="divider"></div>
+
+            <!--
+            Production integration notes:
+            - Render the <ul> on the server from your scripts inventory.
+            - For each script, render a <form method="post" action="/run-scraper"> with a CSRF token input.
+            - Server should respond with a 303 redirect to a job/status page (POST-Redirect-GET pattern) to avoid double submits.
+          -->
+
+            <ul class="scripts-list">
+              {% for script in scripts %}
+              <li>
+                <div class="script-row">
+                  <div class="script-meta">
+                    <div style="min-width: 0">
+                      <div class="script-name">{{ script|cut:".py" }}</div>
+                      <div class="script-desc">
+                        Runs {{ script|cut:".py" }} scraper via Celery
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="controls" aria-hidden="false">
+                    <form method="post" style="display: inline; margin: 0">
+                      {% csrf_token %}
+                      <input
+                        type="hidden"
+                        name="script_name"
+                        value="{{ script }}"
+                      />
+                      <button type="submit" class="btn btn-primary">Run</button>
+                    </form>
+                  </div>
+                </div>
+              </li>
+              {% empty %}
+              <li>
+                <div class="script-row">
+                  <div class="script-meta">
+                    <div class="script-name">No scripts found</div>
+                    <div class="script-desc">
+                      Place .py files in /myapp/scrapers/
+                    </div>
+                  </div>
+                </div>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+          <!-- .card -->
+
+          <div style="margin-top: 14px" class="card">
+            <h2>Best Practices in Web Scraping</h2>
+            <div class="note">
+              These guidelines help ensure your scraping is efficient, ethical,
+              and reliable.
+            </div>
+            <ul>
+              <li>
+                <strong>Respect robots.txt and site terms:</strong> Always check
+                if the site allows scraping before sending requests.
+              </li>
+              <li>
+                <strong>Rate limiting:</strong> Throttle requests to avoid
+                overloading servers; use polite delays and retries.
+              </li>
+              <li>
+                <strong>User-Agent headers:</strong> Identify your scraper
+                responsibly instead of pretending to be a browser.
+              </li>
+              <li>
+                <strong>Handle errors gracefully:</strong> Implement retries
+                with backoff, and log errors for debugging.
+              </li>
+              <li>
+                <strong>Data cleanliness:</strong> Validate, deduplicate, and
+                sanitize scraped data before storage.
+              </li>
+              <li>
+                <strong>Scalability:</strong> Use queues (Celery, Redis,
+                RabbitMQ) for managing large scraping jobs.
+              </li>
+              <li>
+                <strong>Security:</strong> Avoid executing raw HTML/JS; sanitize
+                inputs to protect your pipeline.
+              </li>
+              <li>
+                <strong>Monitoring:</strong> Track scraper health, request
+                counts, and failures to detect issues early.
+              </li>
+              <li>
+                <strong>Storage strategy:</strong> Choose proper formats (CSV,
+                JSON, database) depending on use case.
+              </li>
+              <li>
+                <strong>Legal considerations:</strong> Ensure compliance with
+                copyright, privacy, and data regulations.
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <aside>
+          <div
+            class="card"
+            role="complementary"
+            aria-labelledby="status-heading"
+          >
+            <h2 id="status-heading" style="margin: 0 0 12px 0; font-size: 16px">
+              Recent activity
+            </h2>
+            <!-- Server should render a list of recent jobs here -->
+            <div class="muted">
+              No recent jobs to show. After running a script, you'll be
+              redirected to the job status page.
+            </div>
+
+            <div class="divider"></div>
+
+            <div style="font-size: 13px; color: var(--muted)">
+              <strong>Deployment tips</strong>
+              <ul style="margin: 8px 0 0 18px; color: var(--muted)">
+                <li>
+                  Serve this page via HTTPS with HSTS and a strong CSP header.
+                </li>
+                <li>
+                  Enable caching for static assets and compress responses
+                  (gzip/br/deflate).
+                </li>
+                <li>
+                  Use monitoring/alerts for job failures and long-running
+                  scrapers.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div style="height: 18px"></div>
+
+          <div class="card">
+            <h3 style="margin: 0 0 8px 0; font-size: 15px">Quick links</h3>
+            <nav aria-label="quick links">
+              <ul
+                style="
+                  margin: 0;
+                  padding: 0;
+                  list-style: none;
+                  display: flex;
+                  flex-direction: column;
+                  gap: 8px;
+                "
+              >
+                <li><a class="btn" href="/jobs">Jobs</a></li>
+                <li><a class="btn" href="/logs">Logs</a></li>
+                <li><a class="btn" href="/settings">Settings</a></li>
+              </ul>
+            </nav>
+          </div>
+        </aside>
+      </main>
+
+      <footer class="muted">
+        &copy; Your Company • <a href="/docs">Docs</a> •
+        <a href="/privacy">Privacy</a>
+      </footer>
+    </div>
+
+    <noscript>
+      <div
+        style="
+          position: fixed;
+          left: 12px;
+          right: 12px;
+          bottom: 12px;
+          padding: 12px;
+          background: #fff;
+          border-radius: 8px;
+          box-shadow: var(--shadow);
+          font-size: 14px;
+        "
+      >
+        JavaScript is disabled in your browser. This UI is fully functional with
+        server-side forms, but dynamic progress updates require JavaScript.
+      </div>
+    </noscript>
+  </body>
+</html>

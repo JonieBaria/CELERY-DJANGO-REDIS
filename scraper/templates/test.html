@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b66ff" />
+    <title>ScraperTool</title>
+    <meta
+      name="description"
+      content="Run and monitor scraper scripts. Server-rendered UI with accessible, responsive controls for production use."
+    />
+    <style>
+      :root {
+        --bg: #f7f8fb;
+        --card: #ffffff;
+        --muted: #6b7280;
+        --accent: #0b66ff;
+        --radius: 12px;
+        --shadow: 0 6px 18px rgba(11, 102, 255, 0.06);
+        font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        color-scheme: light;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: #0f172a;
+        line-height: 1.45;
+        font-size: 16px;
+      }
+      .container {
+        max-width: 980px;
+        margin: 36px auto;
+        padding: 24px;
+      }
+      .card {
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 18px;
+      }
+      .scripts-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .script-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px;
+        border-radius: 10px;
+        border: 1px solid #eef2ff;
+      }
+      .script-name {
+        font-weight: 600;
+        color: #0f172a;
+      }
+      .btn {
+        appearance: none;
+        border: 1px solid #dbeafe;
+        background: #fff;
+        padding: 8px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      .btn-primary {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+      footer {
+        margin-top: 18px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>ScraperTool</h1>
+      </header>
+
+      <main>
+        <section aria-labelledby="scripts-heading">
+          <div class="card" role="region" aria-label="Available scrapers">
+            <h2 id="scripts-heading" style="margin: 0; font-size: 16px">
+              Available Scrapers
+            </h2>
+            <div class="divider"></div>
+
+            <ul class="scripts-list">
+              {% for script in scripts %}
+              <li>
+                <div class="script-row">
+                  <div class="script-name">{{ script }}</div>
+                  <div class="controls">
+                    <form method="post" style="margin: 0">
+                      {% csrf_token %}
+                      <input
+                        type="hidden"
+                        name="script_name"
+                        value="{{ script }}"
+                      />
+                      <button type="submit" class="btn btn-primary">Run</button>
+                    </form>
+                  </div>
+                </div>
+              </li>
+              {% empty %}
+              <li>No scraper scripts found.</li>
+              {% endfor %}
+            </ul>
+          </div>
+
+          {% if result %}
+          <div class="card" style="margin-top: 16px">
+            <h3>Result</h3>
+            <p>{{ result }}</p>
+          </div>
+          {% endif %}
+        </section>
+      </main>
+
+      <footer>&copy; Your Company • <a href="/docs">Docs</a></footer>
+    </div>
+  </body>
+</html>
